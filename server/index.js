@@ -2,35 +2,24 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const color = require("colors");
+const dotenv = require("dotenv");
+const connectDB = require("./data/db");
+const userRoutes = require("./routes/userRoutes");
+const chatRoutes = require("./routes/chatRoutes");
+const { notFound, errorHandler } = require("./middleware/error");
 
 const app = express();
-require("dotenv").config();
+dotenv.config();
+connectDB();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); //to accept JSON data
 
-app.get("/api/chat", (req, res) => {
-  res.send(chats);
-});
-app.get("/api/chat/:id", (req, res) => {
-  const singleChat = chats.find((c) => c._id === req.params.id);
-  res.send(singleChat);
-});
+app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
 
-// Connect Database MongoDB
-mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log(
-      `DB Connection Successful: ${mongoose.connection.host}`.cyan.underline
-    );
-  })
-  .catch((err) => {
-    console.log(`Error: ${err.message}`.red.bold);
-  });
+app.use(notFound);
+app.use(errorHandler);
 
 const Port = process.env.PORT;
 app.listen(Port, console.log(`Server Started on Port ${Port}`.yellow.bold));
