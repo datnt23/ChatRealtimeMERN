@@ -32,6 +32,7 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import ChatLoading from "../ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
+import { getSender } from "./ChatFunc";
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
@@ -39,7 +40,14 @@ const SideDrawer = () => {
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
   const history = useHistory();
-  const { user, setSelectedChat, chats, setChats } = ChatState();
+  const {
+    user,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const logOutHandler = () => {
@@ -134,7 +142,22 @@ const SideDrawer = () => {
             <MenuButton p={1}>
               <BellIcon fontSize={"2xl"} m={1} />
             </MenuButton>
-            {/* <MenuList></MenuList> */}
+            <MenuList pl={2}>
+              {!notification.length && "No New Messages"}
+              {notification.map((no) => {
+                <MenuItem
+                  key={no._id}
+                  onClick={() => {
+                    setSelectedChat(no.chat);
+                    setNotification(notification.filter((n) => n !== no));
+                  }}
+                >
+                  {no.chat.isGroupChat
+                    ? `New Message in ${no.chat.chatName}`
+                    : `New Message from ${getSender(user, no.chat.users)}`}
+                </MenuItem>;
+              })}
+            </MenuList>
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
