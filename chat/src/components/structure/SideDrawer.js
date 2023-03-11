@@ -33,12 +33,13 @@ import axios from "axios";
 import ChatLoading from "../ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
 import { getSender } from "./ChatFunc";
-
+import { Effect } from "react-notification-badge";
+import NotificationBadge from "react-notification-badge";
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loadingChat, setLoadingChat] = useState();
+  const [loadingChat, setLoadingChat] = useState(false);
   const history = useHistory();
   const {
     user,
@@ -140,25 +141,30 @@ const SideDrawer = () => {
         <div>
           <Menu>
             <MenuButton p={1}>
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
               <BellIcon fontSize={"2xl"} m={1} />
             </MenuButton>
             <MenuList pl={2}>
               {!notification.length && "No New Messages"}
-              {notification.map((no) => {
+              {notification.map((noti) => {
                 <MenuItem
-                  key={no._id}
+                  key={noti._id}
                   onClick={() => {
-                    setSelectedChat(no.chat);
-                    setNotification(notification.filter((n) => n !== no));
+                    setSelectedChat(noti.chat);
+                    setNotification(notification.filter((n) => n !== noti));
                   }}
                 >
-                  {no.chat.isGroupChat
-                    ? `New Message in ${no.chat.chatName}`
-                    : `New Message from ${getSender(user, no.chat.users)}`}
+                  {noti.chat.isGroupChat
+                    ? `New Message in ${noti.chat.chatName}`
+                    : `New Message from ${getSender(user, noti.chat.users)}`}
                 </MenuItem>;
               })}
             </MenuList>
           </Menu>
+
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
               <Avatar
