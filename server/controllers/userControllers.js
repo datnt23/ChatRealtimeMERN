@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const generateToken = require("../config/generateToken");
+const validator = require("validator");
 
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, pic } = req.body;
@@ -8,6 +9,10 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!name || !email || !password) {
     res.status(400);
     throw new Error("Please Enter all the Fields");
+  }
+  if (!validator.isEmail(email)) {
+    res.status(400);
+    throw new Error("Email is Invalid Email!");
   }
 
   const userExists = await User.findOne({ email });
@@ -29,7 +34,6 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      //   isAdmin: user.isAdmin,
       pic: user.pic,
       token: generateToken(user._id),
     });
@@ -49,7 +53,6 @@ const authUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      // isAdmin: user.isAdmin,
       pic: user.pic,
       token: generateToken(user._id),
     });

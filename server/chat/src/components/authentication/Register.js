@@ -76,6 +76,7 @@ const Register = () => {
       setLoading(false);
       return;
     }
+
     if (password !== confirmPassword) {
       toast({
         title: "Password do not match!",
